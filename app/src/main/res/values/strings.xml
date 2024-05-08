@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Weather Forecast</string>
+
+    <!-- application settings -->
+    <string name="secret_key">728632e80a93daefdecbb76d79a1d2b1</string>
+    <string name="iv">d7217f279c39040f4523b118593031d7</string>
+
+    <string name="retry">Retry</string>
+
+    <string name="failed_network_msg">No internet connection</string>
+</resources>

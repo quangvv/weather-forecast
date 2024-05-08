@@ -1,0 +1,142 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+}
+android {
+    namespace 'com.android.weather.forecast'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.android.weather.forecast"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    flavorDimensions +="environment"
+    Properties buildProperties = new Properties()
+    project.rootProject.file("build.properties").withInputStream { buildProperties.load(it) }
+    productFlavors {
+        production {
+            buildConfigField 'String', 'API_URL', "\"${buildProperties.getProperty("release_api_url")}\""
+            buildConfigField 'String', 'API_KEY', "\"${buildProperties.getProperty("release_api_key")}\""
+            buildConfigField 'String', 'DATABASE_VERSION', "\"${buildProperties.getProperty("release_database_version")}\""
+            buildConfigField 'String', 'DATABASE_NAME', "\"${buildProperties.getProperty("release_database_name")}\""
+            buildConfigField 'String', 'SHARE_PREFERENCE_NAME', "\"${buildProperties.getProperty("release_sharedPrefs_name")}\""
+            buildConfigField 'String', 'ENVIRONMENT', "\"${buildProperties.getProperty("release_environment")}\""
+        }
+
+        development {
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+            buildConfigField 'String', 'API_URL', "\"${buildProperties.getProperty("develop_api_url")}\""
+            buildConfigField 'String', 'API_KEY', "\"${buildProperties.getProperty("develop_api_key")}\""
+            buildConfigField 'String', 'DATABASE_VERSION', "\"${buildProperties.getProperty("develop_database_version")}\""
+            buildConfigField 'String', 'DATABASE_NAME', "\"${buildProperties.getProperty("develop_database_name")}\""
+            buildConfigField 'String', 'SHARE_PREFERENCE_NAME', "\"${buildProperties.getProperty("develop_sharedPrefs_name")}\""
+            buildConfigField 'String', 'ENVIRONMENT', "\"${buildProperties.getProperty("develop_environment")}\""
+        }
+    }
+    signingConfigs {
+        config {
+            storeFile file("keystore/debug.jks")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
+            signingConfig signingConfigs.config
+        }
+        release {
+            minifyEnabled true
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = 17
+    }
+    buildFeatures {
+        compose true
+        buildConfig true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_compiler_version
+        kotlinCompilerVersion kotlin_version
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+    implementation 'androidx.activity:activity-compose:1.9.0'
+    implementation 'androidx.navigation:navigation-runtime-ktx:2.7.7'
+    implementation 'androidx.compose.material3:material3-android:1.2.1'
+    implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+
+    // Multidex
+    implementation "androidx.multidex:multidex:2.0.1"
+
+    // Hilt DI
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    // Lifecycle
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+
+    // splash screen
+    implementation "androidx.core:core-splashscreen:1.0.1"
+
+    // Coroutines
+    //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
+
+    // Moshi
+    implementation 'com.squareup.moshi:moshi:1.14.0'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.11.0'
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2"
+
+    // Room
+//    implementation "androidx.room:room-runtime:$versions.roomVersion"
+//    kapt "androidx.room:room-compiler:$versions.roomVersion"
+//    implementation "androidx.room:room-ktx:$versions.roomVersion"
+
+    // timber log
+    implementation 'com.jakewharton.timber:timber:5.0.1'
+}
